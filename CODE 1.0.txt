@@ -55,11 +55,12 @@ void loop() {
   int c = -mpu.getAngleY();
 
   int servo_up_down_angle = map(a, -90, 90, 0, 180);
-  int servo_left_right_angle = map(b, -150, 90, 0, 150);
+  int servo_left_right_angle = map(b, -180, 90, 0, 180);
   int servo_roll_angle = map(c, -90, 90, 0, 180);
 
   servo_up_down.write(servo_up_down_angle);
   servo_left_right.write(servo_left_right_angle);
+  if(servo_roll_angle>=60 &&servo_roll_angle<=190)
   servo_roll.write(servo_roll_angle);
 
   // Rata de refresh a giroscopului/motoarelor
