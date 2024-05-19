@@ -1,0 +1,87 @@
+#include <Wire.h>
+#include <MPU6050_light.h>
+#include <Servo.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
+
+MPU6050 mpu(Wire);
+#define OLED_RESET 4
+Adafruit_SSD1306 display(OLED_RESET);
+#define OLED_address 0x3c
+Servo servo_up_down, servo_left_right, servo_roll;
+
+  //pini pentru motoarele bratului
+
+int servo_up_down_pin = 2;
+int servo_left_right_pin = 3;
+int servo_roll_pin = 4;
+
+void setup() {
+  Wire.begin();
+  byte status = mpu.begin();
+  
+  // Verificarea giroscopului
+
+  if (status != 0) {
+    Serial.print(F("MPU6050 status: "));
+    Serial.println(status);
+    while (1); // Opreste codul in cazul in care giroscopul nu este initializat corect
+
+  }
+
+  // Calibrare giroscop si accelerometru
+
+  Serial.println(F("Calibrating..."));
+  mpu.calcOffsets(); 
+  Serial.println("Calibration done!");
+
+  display.begin(SSD1306_SWITCHCAPVCC, OLED_address);
+  display.clearDisplay();
+
+  servo_up_down.attach(servo_up_down_pin);
+  servo_left_right.attach(servo_left_right_pin);
+  servo_roll.attach(servo_roll_pin);
+}
+
+void loop() {
+  mpu.update();
+
+  display.clearDisplay();
+
+  // Prelucrare coordonate MPU6050
+
+  int a = mpu.getAngleX();
+  int b = mpu.getAngleZ();
+  int c = -mpu.getAngleY();
+
+  int servo_up_down_angle = map(a, -90, 90, 0, 180);
+  int servo_left_right_angle = map(b, -150, 90, 0, 150);
+  int servo_roll_angle = map(c, -90, 90, 0, 180);
+
+  servo_up_down.write(servo_up_down_angle);
+  servo_left_right.write(servo_left_right_angle);
+  servo_roll.write(servo_roll_angle);
+
+  // Rata de refresh a giroscopului/motoarelor
+
+  delay(1);
+
+  // Afisare OLED
+
+  display.setTextSize(1);
+  display.setCursor(45, 0);
+  display.setTextColor(WHITE);
+
+  display.print("X: ");
+  display.println(servo_up_down_angle);
+
+  display.setCursor(45, 10);
+  display.print("Y: ");
+  display.println(servo_left_right_angle);
+
+  display.setCursor(45, 20);
+  display.print("Z: ");
+  display.println(servo_roll_angle);
+
+  display.display();
+}
