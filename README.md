@@ -163,9 +163,10 @@ Modify OLED display parameters in the display section of the loop.
 - **Motion capture** for animation
 - **Educational projects** for learning sensor integration
 
+
 ## License
 
-This project is open source. Feel free to modify and distribute according to your needs.
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
 ## Contributing
 
